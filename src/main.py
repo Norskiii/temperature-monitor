@@ -23,10 +23,18 @@ def readTemperature():
 
 
 def showWarning(colour):
-    end_time = datetime.now() + timedelta(hours=1)
+    x = colour
+    o = (0, 0, 0)
 
-    while end_time > datetime.now():
-        sense.show_message("!", text_colour = colour, scroll_speed = 0.2)
+    warning = [o, o, o, x, x, o, o, o,
+            o, o, o, x, x, o, o, o,
+            o, o, o, x, x, o, o, o,
+            o, o, o, x, x, o, o, o,
+            o, o, o, x, x, o, o, o,
+            o, o, o, o, o, o, o, o,
+            o, o, o, x, x, o, o, o,
+            o, o, o, x, x, o, o, o]
+    sense.set_pixels(warning)
 
 
 def allOK():
@@ -73,8 +81,8 @@ def main():
             showWarning([255, 0, 0])
         else:
             allOK()
-            time.sleep(3600)
 
+        time.sleep(3600)
         i += 1
         i = i % 24
 
