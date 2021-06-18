@@ -28,22 +28,48 @@ def readTemperature():
 
 
 def showWarning(colour):
-    end_time = datetime.now() + timedelta(hours=1)
+    x = colour
+    o = (0, 0, 0)
 
-    while end_time > datetime.now():
-        sense.show_message("!!!", text_colour = colour)
+    warning = [o, o, o, x, x, o, o, o,
+            o, o, o, x, x, o, o, o,
+            o, o, o, x, x, o, o, o,
+            o, o, o, x, x, o, o, o,
+            o, o, o, x, x, o, o, o,
+            o, o, o, o, o, o, o, o,
+            o, o, o, x, x, o, o, o,
+            o, o, o, x, x, o, o, o]
+            
+    sense.set_pixels(warning)
+
+
+def allOK():
+    x = (0, 255, 0)
+    o = (0, 0, 0)
+
+    ok = [o, o, o, o, o, o, o, o,
+            x, x, x, o, x, o, o, x,
+            x, o, x, o, x, o, x, o,
+            x, o, x, o, x, x, o, o,
+            x, o, x, o, x, o, x, o,
+            x, x, x, o, x, o, o, x,
+            o, o, o, o, o, o, o, o,
+            x, x, x, x, x, x, x, x]
+
+    sense.set_pixels(ok)
 
 
 def main():
     i = 0
-    sensor_values = np.zeros(24)
+    sensor_values = np.full(24, 15)
 
     while True:
+        sense.clear()
         yellow_warning = False
         red_warning = False
         observation_start, observation_end, forecast_start, forecast_end = getTimeFrames()
 
-        # Temperature forecast, observation and current reading
+         # Temperature forecast, observation and current reading
         forecast_times, forecast_values = apiRequestNext24H("Tampere", forecast_start, forecast_end)
         observation_times, observation_values = apiRequestLast24H("Tampere", observation_start, observation_end)
         sensor_values[i] = readTemperature()
@@ -61,11 +87,14 @@ def main():
         elif red_warning:
             showWarning([255, 0, 0])
         else:
-            time.sleep(3600)
+            allOK()
 
+        time.sleep(3600)
         i += 1
         i = i % 24
 
 
 if __name__ == "__main__":
     main()
+
+
