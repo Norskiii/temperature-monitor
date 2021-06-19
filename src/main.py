@@ -70,8 +70,8 @@ def main():
         observation_start, observation_end, forecast_start, forecast_end = getTimeFrames()
 
          # Temperature forecast, observation and current reading
-        forecast_times, forecast_values = apiRequestNext24H("Tampere", forecast_start, forecast_end)
-        observation_times, observation_values = apiRequestLast24H("Tampere", observation_start, observation_end)
+        forecast_times, forecast_values = getTemperatureForecast("Tampere", forecast_start, forecast_end)
+        observation_times, observation_values = getTemperatureObservations("Tampere", observation_start, observation_end)
         sensor_values[i] = readTemperature()
         
         for temperature in forecast_values:
