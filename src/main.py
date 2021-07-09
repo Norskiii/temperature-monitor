@@ -1,9 +1,8 @@
 from weather_api import *
+from db_connection import *
 from datetime import datetime, timedelta
 import time
-import numpy as np
 from sense_hat import SenseHat
-import json
 import os
 
 
@@ -57,30 +56,11 @@ def all_ok():
     sense.set_pixels(ok)
 
 
-def write_to_file(o_times, f_times, s_times, o_values, f_values, s_values):
-    f_zip = zip(f_times, f_values)
-    s_zip = zip(s_times, s_values.tolist())
-    o_zip = zip(o_times, o_values)
-
-    f_json_string = json.dumps(dict(f_zip))
-    s_json_string = json.dumps(dict(s_zip))
-    o_json_string = json.dumps(dict(o_zip))
-
-    with open(os.path.join(os.getcwd(), 'forecastData.json'), 'w') as file:
-        file.write(f_json_string)
-
-    with open(os.path.join(os.getcwd(), 'sensorData.json'), 'w') as file:
-        file.write(s_json_string)
-
-    with open(os.path.join(os.getcwd(), 'observationData.json'), 'w') as file:
-        file.write(o_json_string)
-
-
 def main():
     i = 0
 
     # Sensor values
-    s_values = np.full(24, 15)
+    s_values = [15] * 24
     s_times = ["NaN"] * 24
 
     while True:
@@ -112,7 +92,7 @@ def main():
         else:
             all_ok()
        
-        write_to_file(o_times, f_times, s_times,  o_values, f_values, s_values)
+        write_to_db(o_times, f_times, s_times,  o_values, f_values, s_values)
 
         time.sleep(3600)
         i += 1
