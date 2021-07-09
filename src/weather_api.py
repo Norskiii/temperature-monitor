@@ -29,7 +29,7 @@ def parse_xml(content):
     values = []
     root = ET.fromstring(content)
 
-    for i in range(0,24):
+    for i in range(0, 24):
         times.insert(i, root[i][0][1].text)
         values.insert(i, root[i][0][3].text)
 

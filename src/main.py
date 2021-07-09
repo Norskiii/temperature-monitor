@@ -11,17 +11,17 @@ sense.low_light = True
 
 
 def get_time_frames():
-        time = datetime.now() + timedelta(hours=1)
-        forecast_start = time.strftime("%Y-%m-%dT%H:00:00Z")
-        time = time + timedelta(hours=23)
-        forecast_end = time.strftime("%Y-%m-%dT%H:00:00Z")
+    now = datetime.now() + timedelta(hours=1)
+    forecast_start = now.strftime("%Y-%m-%dT%H:00:00Z")
+    now = now + timedelta(hours=23)
+    forecast_end = now.strftime("%Y-%m-%dT%H:00:00Z")
 
-        time = datetime.now()
-        observation_end = time.strftime("%Y-%m-%dT%H:00:00Z")
-        time = time = time - timedelta(hours=24)
-        observation_start = time.strftime("%Y-%m-%dT%H:00:00Z")
+    now = datetime.now()
+    observation_end = now.strftime("%Y-%m-%dT%H:00:00Z")
+    now = now - timedelta(hours=24)
+    observation_start = now.strftime("%Y-%m-%dT%H:00:00Z")
 
-        return observation_start, observation_end, forecast_start, forecast_end
+    return observation_start, observation_end, forecast_start, forecast_end
 
 
 def show_warning(colour):
@@ -29,13 +29,13 @@ def show_warning(colour):
     o = (0, 0, 0)
 
     warning = [o, o, o, x, x, o, o, o,
-            o, o, o, x, x, o, o, o,
-            o, o, o, x, x, o, o, o,
-            o, o, o, x, x, o, o, o,
-            o, o, o, x, x, o, o, o,
-            o, o, o, o, o, o, o, o,
-            o, o, o, x, x, o, o, o,
-            o, o, o, x, x, o, o, o]
+               o, o, o, x, x, o, o, o,
+               o, o, o, x, x, o, o, o,
+               o, o, o, x, x, o, o, o,
+               o, o, o, x, x, o, o, o,
+               o, o, o, o, o, o, o, o,
+               o, o, o, x, x, o, o, o,
+               o, o, o, x, x, o, o, o]
             
     sense.set_pixels(warning)
 
@@ -45,13 +45,13 @@ def all_ok():
     o = (0, 0, 0)
 
     ok = [o, o, o, o, o, o, o, o,
-            x, x, x, o, x, o, o, x,
-            x, o, x, o, x, o, x, o,
-            x, o, x, o, x, x, o, o,
-            x, o, x, o, x, o, x, o,
-            x, x, x, o, x, o, o, x,
-            o, o, o, o, o, o, o, o,
-            x, x, x, x, x, x, x, x]
+          x, x, x, o, x, o, o, x,
+          x, o, x, o, x, o, x, o,
+          x, o, x, o, x, x, o, o,
+          x, o, x, o, x, o, x, o,
+          x, x, x, o, x, o, o, x,
+          o, o, o, o, o, o, o, o,
+          x, x, x, x, x, x, x, x]
 
     sense.set_pixels(ok)
 
@@ -71,12 +71,12 @@ def main():
         # Timeframes for last 24H observations and next 24H forecast
         o_start, o_end, f_start, f_end = get_time_frames()
 
-         # Temperature forecast, observation and current reading
+        # Temperature forecast, observation and current reading
         f_times, f_values = get_temperature_forecast("Tampere", f_start, f_end)
         o_times, o_values = get_temperature_observations("Tampere", o_start, o_end)
         s_values[i] = sense.get_temperature()
         s_times[i] = datetime.now().strftime("%Y-%m-%dT%H:00:00Z")
-        
+
         for temperature in f_values:
             if float(temperature) < 10:
                 yellow_warning = True
