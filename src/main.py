@@ -55,18 +55,18 @@ def all_ok():
     sense.set_pixels(ok)
 
 
-def write_to_file(times, forecast_values, sensor_values):
-    zip_forecast = zip(times, forecast_values)
-    zip_sensor = zip(times, sensor_values.tolist())
+def write_to_file(times, f_values, s_values):
+    f_zip = zip(times, f_values)
+    s_zip = zip(times, s_values.tolist())
 
-    forecast_json_string = json.dumps(dict(zip_forecast))
-    sensor_json_string = json.dumps(dict(zip_sensor))
+    f_json_string = json.dumps(dict(f_zip))
+    s_json_string = json.dumps(dict(s_zip))
 
     with open(os.path.join(os.getcwd(), '..', '..', 'forecastData.json'), 'w') as file:
-        file.write(forecast_json_string)
+        file.write(f_json_string)
 
     with open(os.path.join(os.getcwd(), '..', '..', 'sensorData.json'), 'w') as file:
-        file.write(sensor_json_string)
+        file.write(s_json_string)
 
 
 def main():
