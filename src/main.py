@@ -11,17 +11,18 @@ sense = SenseHat()
 sense.low_light = True
 
 
-def get_time_frame():
+def get_time_frames():
         time = datetime.now() + timedelta(hours=1)
-        start = time.strftime("%Y-%m-%dT%H:00:00Z")
+        forecast_start = time.strftime("%Y-%m-%dT%H:00:00Z")
         time = time + timedelta(hours=23)
-        end = time.strftime("%Y-%m-%dT%H:00:00Z")
+        forecast_end = time.strftime("%Y-%m-%dT%H:00:00Z")
 
-        return start, end
+        time = datetime.now()
+        observation_end = time.strftime("%Y-%m-%dT%H:00:00Z")
+        time = time = time - timedelta(hours=24)
+        observation_start = time.strftime("%Y-%m-%dT%H:00:00Z")
 
-
-def read_temperature():
-    return sense.get_temperature()
+        return observation_start, observation_end, forecast_start, forecast_end
 
 
 def show_warning(colour):
@@ -36,6 +37,7 @@ def show_warning(colour):
             o, o, o, o, o, o, o, o,
             o, o, o, x, x, o, o, o,
             o, o, o, x, x, o, o, o]
+            
     sense.set_pixels(warning)
 
 
@@ -55,34 +57,45 @@ def all_ok():
     sense.set_pixels(ok)
 
 
-def write_to_file(times, f_values, s_values):
-    f_zip = zip(times, f_values)
-    s_zip = zip(times, s_values.tolist())
+def write_to_file(o_times, f_times, s_times, o_values, f_values, s_values):
+    f_zip = zip(f_times, f_values)
+    s_zip = zip(s_times, s_values.tolist())
+    o_zip = zip(o_times, o_values)
 
     f_json_string = json.dumps(dict(f_zip))
     s_json_string = json.dumps(dict(s_zip))
+    o_json_string = json.dumps(dict(o_zip))
 
-    with open(os.path.join(os.getcwd(), '..', '..', 'forecastData.json'), 'w') as file:
+    with open(os.path.join(os.getcwd(), 'forecastData.json'), 'w') as file:
         file.write(f_json_string)
 
-    with open(os.path.join(os.getcwd(), '..', '..', 'sensorData.json'), 'w') as file:
+    with open(os.path.join(os.getcwd(), 'sensorData.json'), 'w') as file:
         file.write(s_json_string)
+
+    with open(os.path.join(os.getcwd(), 'observationData.json'), 'w') as file:
+        file.write(o_json_string)
 
 
 def main():
     i = 0
+
     # Sensor values
     s_values = np.full(24, 15)
+    s_times = ["NaN"] * 24
 
     while True:
         sense.clear()
         yellow_warning = False
         red_warning = False
-        start, end = get_time_frame()
 
-        # Temeprature forecast and current reading
-        times, f_values = api_request("Tampere", start, end)
-        s_values[i] = read_temperature()
+        # Timeframes for last 24H observations and next 24H forecast
+        o_start, o_end, f_start, f_end = get_time_frames()
+
+         # Temperature forecast, observation and current reading
+        f_times, f_values = get_temperature_forecast("Tampere", f_start, f_end)
+        o_times, o_values = get_temperature_observations("Tampere", o_start, o_end)
+        s_values[i] = sense.get_temperature()
+        s_times[i] = datetime.now().strftime("%Y-%m-%dT%H:00:00Z")
         
         for temperature in f_values:
             if float(temperature) < 10:
@@ -99,7 +112,7 @@ def main():
         else:
             all_ok()
        
-        write_to_file(times, f_values, s_values)
+        write_to_file(o_times, f_times, s_times,  o_values, f_values, s_values)
 
         time.sleep(3600)
         i += 1
@@ -108,3 +121,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
