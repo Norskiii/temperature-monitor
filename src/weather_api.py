@@ -2,7 +2,7 @@ import requests
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta
 
-def apiRequest(location, start, end):
+def api_request(location, start, end):
     url = "https://opendata.fmi.fi/wfs?request=getFeature&version=2.0.0&storedquery_id=fmi::forecast::hirlam::surface::point::simple&&place=" + \
           location + "&timestep=60&starttime=" + \
           start + "&endtime=" + \
@@ -10,10 +10,10 @@ def apiRequest(location, start, end):
 
     r = requests.get(url)
     
-    return parseXML(r.text)
+    return parse_xml(r.text)
 
 
-def parseXML(content):
+def parse_xml(content):
     times = []
     values = []
     root = ET.fromstring(content)
