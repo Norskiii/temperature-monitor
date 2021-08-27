@@ -2,6 +2,7 @@ from weather_api import *
 from db_connection import *
 from datetime import datetime, timedelta
 import time
+import numpy as np
 from sense_hat import SenseHat
 import os
 
@@ -56,11 +57,20 @@ def all_ok():
     sense.set_pixels(ok)
 
 
+def formatDatetimeToHours(times):
+    hours = []
+
+    for dt in times:
+        hours.append(datetime.strptime(dt, "%Y-%m-%dT%H:00:00Z").strftime("%H"))
+
+    return hours
+
+
 def main():
     i = 0
 
     # Sensor values
-    s_values = [15] * 24
+    s_values = ["15"] * 24
     s_times = ["NaN"] * 24
 
     while True:
@@ -74,15 +84,17 @@ def main():
         # Temperature forecast, observation and current reading
         f_times, f_values = get_temperature_forecast("Tampere", f_start, f_end)
         o_times, o_values = get_temperature_observations("Tampere", o_start, o_end)
-        s_values[i] = sense.get_temperature()
-        s_times[i] = datetime.now().strftime("%Y-%m-%dT%H:00:00Z")
+        f_times = formatDatetimeToHours(f_times)
+        o_times = formatDatetimeToHours(o_times)
+        s_values[i] = str(np.round(sense.get_temperature(), 1))
+        s_times[i] = datetime.now().strftime("%H")
 
         for temperature in f_values:
             if float(temperature) < 10:
                 yellow_warning = True
         
         for temperature in s_values:
-            if temperature < 15:
+            if float(temperature) < 15:
                 red_warning = True
                 
         if yellow_warning and not red_warning:
@@ -91,7 +103,7 @@ def main():
             show_warning([255, 0, 0])
         else:
             all_ok()
-       
+        
         write_to_db(o_times, f_times, s_times,  o_values, f_values, s_values)
 
         time.sleep(3600)
