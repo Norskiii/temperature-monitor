@@ -4,7 +4,26 @@ import json
 import subprocess
 
 
+def check_for_nan_values(times, values):
+    new_values = []
+    new_times = []
+    for i in range(len(values)):
+        if times[i] == "NaN" or values[i] == "NaN":
+            new_values.append(-1)
+            new_times.append(-1)
+        else:
+            new_values.append(float(values[i]))
+            new_times.append(int(times[i]))
+
+    return new_times, new_values
+
+
 def write_to_db(o_times, f_times, s_times, o_values, f_values, s_values):
+    # Check all lists for NaN values
+    o_times, o_values = check_for_nan_values(o_times, o_values)
+    f_times, f_values = check_for_nan_values(f_times, f_values)
+    s_times, s_values = check_for_nan_values(s_times, s_values)
+    
     # Lists for observation, forecast and sensor datareadings
     # For each reading an id, time(current hour) and value will be saved
     o_data = []
