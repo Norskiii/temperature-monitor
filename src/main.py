@@ -33,8 +33,9 @@ def read_sensor_values():
         lines = f.readlines()
         for line in lines:
             x = line.split(',')
-            times.append(x[0])
-            values.append(x[1])
+            if len(x) == 2:
+                times.append(x[0])
+                values.append(float(x[1]))
 
     return times, values
 
@@ -42,7 +43,7 @@ def read_sensor_values():
 def write_sensor_values(times, values):
     with open('sensor.txt', 'w') as f:
         for i in range(len(values)):
-                f.write(str(times[i]) + " " + str(values[i]))
+                f.write(str(times[i]) + ", " + str(values[i]))
                 f.write('\n')
 
 
