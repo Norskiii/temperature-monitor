@@ -8,6 +8,7 @@ def get_temperature_forecast(location, start, end):
           start + "&endtime=" + \
           end + "&parameters=temperature"
 
+    print("Requesting weather data with url: ", url, flush=True)
     r = requests.get(url)
     
     return parse_xml(r.text)
@@ -18,7 +19,8 @@ def get_temperature_observations(location, start, end):
           location + "&timestep=60&starttime=" + \
           start + "&endtime=" + \
           end + "&parameters=TA_PT1H_AVG"
-
+    
+    print("Requesting weather data with url: ", url, flush=True)
     r = requests.get(url)
     
     return parse_xml(r.text)

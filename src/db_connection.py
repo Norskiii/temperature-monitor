@@ -4,25 +4,23 @@ import json
 import subprocess
 
 
-def check_for_nan_values(times, values):
+def check_for_nan_values(values):
     new_values = []
-    new_times = []
+
     for i in range(len(values)):
-        if times[i] == "NaN" or values[i] == "NaN":
-            new_values.append(-1)
-            new_times.append(-1)
+        if values[i] == "NaN":
+            new_values.append(-100)
         else:
             new_values.append(float(values[i]))
-            new_times.append(int(times[i]))
 
-    return new_times, new_values
+    return new_values
 
 
 def write_to_db(o_times, f_times, s_times, o_values, f_values, s_values):
     # Check all lists for NaN values
-    o_times, o_values = check_for_nan_values(o_times, o_values)
-    f_times, f_values = check_for_nan_values(f_times, f_values)
-    s_times, s_values = check_for_nan_values(s_times, s_values)
+    o_values = check_for_nan_values(o_values)
+    f_values = check_for_nan_values(f_values)
+    s_values = check_for_nan_values(s_values)
     
     # Lists for observation, forecast and sensor datareadings
     # For each reading an id, time(current hour) and value will be saved
@@ -32,13 +30,13 @@ def write_to_db(o_times, f_times, s_times, o_values, f_values, s_values):
 
     # Save datapoints into lists in correct dataformats
     for i in range(len(o_values)):
-        o_data.append({'id':i, 'time':o_times[i], 'value':o_values[i]}) 
+        o_data.append({'x':o_times[i], 'y':o_values[i]}) 
     
     for i in range(len(f_values)):
-        f_data.append({'id':i, 'time':f_times[i], 'value':f_values[i]})
+        f_data.append({'x':f_times[i], 'y':f_values[i]})
 
     for i in range(len(s_values)):
-        s_data.append({'id':i, 'time':s_times[i], 'value':s_values[i]})
+        s_data.append({'x':s_times[i], 'y':s_values[i]})
  
     # Cornvert lists into JSON strings what will be saved to the database
     o_json = json.dumps(o_data)
@@ -51,7 +49,7 @@ def write_to_db(o_times, f_times, s_times, o_values, f_values, s_values):
     
     result = subprocess.run(['heroku','config:get','DATABASE_URL', '-a', 'norski-live'], stdout=subprocess.PIPE)
     url = result.stdout.decode('ascii').strip()
-    print(url, flush=True)
+    print("Connecting to database url:", url, flush=True)
 
     try:
         connection = psycopg2.connect(url, sslmode='require')
