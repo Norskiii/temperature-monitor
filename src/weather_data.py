@@ -1,5 +1,6 @@
 from fmiopendata.wfs import download_stored_query
 import datetime as dt
+import math
 
 
 def get_temperature_forecast():
@@ -19,6 +20,10 @@ def get_temperature_forecast():
     times = [time.strftime("%d.%m. %H:00") for time in obs.data[location]['times']]
     values = obs.data[location]['Temperature']['values'] 
 
+    for i in range(len(values)):
+        if math.isnan(values[i]):
+            values[i] = values[i-1]
+
     return times, values
 
 
@@ -35,9 +40,14 @@ def get_temperature_observations():
                                     'timestep=60', \
                                     'starttime=' + start_time, \
                                     'endtime=' + end_time])
+
     location = sorted(obs.data.keys())[0]
 
     times = [time.strftime("%d.%m. %H:00") for time in obs.data[location]['times']]
     values = obs.data[location]['t2m']['values'] 
+
+    for i in range(len(values)):
+        if math.isnan(values[i]):
+            values[i] = values[i-1]
 
     return times, values
