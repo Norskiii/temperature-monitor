@@ -1,4 +1,4 @@
-from weather_api import *
+from weather_data import *
 from db_connection import *
 from datetime import datetime, timedelta
 import time
@@ -9,20 +9,6 @@ import os
 
 sense = SenseHat()
 sense.low_light = True
-
-
-def get_time_frames():
-    now = datetime.now()
-    forecast_start = now.strftime("%Y-%m-%dT%H:00:00Z")
-    now = now + timedelta(hours=23)
-    forecast_end = now.strftime("%Y-%m-%dT%H:00:00Z")
-
-    now = datetime.now()
-    observation_end = now.strftime("%Y-%m-%dT%H:00:00Z")
-    now = now - timedelta(hours=24)
-    observation_start = now.strftime("%Y-%m-%dT%H:00:00Z")
-
-    return observation_start, observation_end, forecast_start, forecast_end
 
 
 def read_sensor_values():
@@ -79,15 +65,6 @@ def all_ok():
     sense.set_pixels(ok)
 
 
-def format_datetime_to_hours(times):
-    hours = []
-
-    for dt in times:
-        hours.append(datetime.strptime(dt, "%Y-%m-%dT%H:00:00Z").strftime("%d.%m. %H:00"))
-
-    return hours
-
-
 def main():
     i = 0
 
@@ -99,18 +76,14 @@ def main():
         yellow_warning = False
         red_warning = False
 
-        # Timeframes for last 24H observations and next 24H forecast
-        o_start, o_end, f_start, f_end = get_time_frames()
-
         # Temperature forecast, observation and current reading
-        f_times, f_values = get_temperature_forecast("Tampere", f_start, f_end)
-        o_times, o_values = get_temperature_observations("Tampere", o_start, o_end)
-        f_times = format_datetime_to_hours(f_times)
-        o_times = format_datetime_to_hours(o_times)
+        f_times, f_values = get_temperature_forecast()
+        o_times, o_values = get_temperature_observations()
+        
         s_values[i] = str(np.round(sense.get_temperature(), 1))
         s_times[i] = datetime.now().strftime("%d.%m. %H:00")
 
-        write_sensor_values(s_times, s_values)
+        # write_sensor_values(s_times, s_values)
 
         for temperature in f_values:
             if float(temperature) < 10:

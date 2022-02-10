@@ -1,3 +1,4 @@
 requests
 numpy
 sense_hat
+fmiopendata
