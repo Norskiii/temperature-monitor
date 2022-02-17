@@ -100,8 +100,14 @@ def main():
         else:
             all_ok()
         
+        # sort sensor times and values
+        s = zip(s_times, s_values)
+        s = sorted(s, key=lambda t: t[0])
+        s_times, s_values = zip(*s)
+
         write_to_db(o_times, f_times, s_times,  o_values, f_values, s_values)
-        
+        write_sensor_values(s_times, s_values)
+
         print("Waiting for next update (1H)", flush=True)
         time.sleep(3600)
         i += 1

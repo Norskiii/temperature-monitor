@@ -2,7 +2,8 @@ import os
 import psycopg2
 import json
 import subprocess
-
+from datetime import datetime
+import time
 
 def check_for_nan_values(values):
     new_values = []
@@ -49,8 +50,8 @@ def write_to_db(o_times, f_times, s_times, o_values, f_values, s_values):
     
     result = subprocess.run(['heroku','config:get','DATABASE_URL', '-a', 'norski-live'], stdout=subprocess.PIPE)
     url = result.stdout.decode('ascii').strip()
-    print("Connecting to database url:", url, flush=True)
-
+    #print("Connecting to database url:", url, flush=True)
+    timestamp = datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
     try:
         connection = psycopg2.connect(url, sslmode='require')
         cursor = connection.cursor()
@@ -60,15 +61,15 @@ def write_to_db(o_times, f_times, s_times, o_values, f_values, s_values):
         connection.commit()
 
         count = cursor.rowcount
-        print(count, "Rows updated", flush=True)
+        print(timestamp, count, "Rows updated", flush=True)
 
     except (Exception, psycopg2.Error) as error:
-        print("Error while updating table", error, flush=True)
+        print(timestamp, "Error while updating table", error, flush=True)
 
     finally:
         # closing database connection.
         if connection:
             cursor.close()
             connection.close()
-            print("PostgreSQL connection is closed", flush=True)
+            print(timestamp, "PostgreSQL connection is closed", flush=True)
 
