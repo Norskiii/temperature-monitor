@@ -70,6 +70,10 @@ def main():
 
     # Sensor values
     s_times, s_values = read_sensor_values()
+    f_times = []
+    f_values = []
+    o_times = []
+    o_values = []
 
     while True:
         sense.clear()
@@ -77,9 +81,17 @@ def main():
         red_warning = False
 
         # Temperature forecast, observation and current reading
-        f_times, f_values = get_temperature_forecast()
-        o_times, o_values = get_temperature_observations()
+        new_f_times, new_f_values = get_temperature_forecast()
+        new_o_times, new_o_values = get_temperature_observations()
         
+        if new_f_times and new_f_values:
+            f_times = new_f_times
+            f_values = new_f_values
+
+        if new_o_times and new_o_values:
+            o_times = new_o_times
+            o_values = new_o_values
+            
         s_values[i] = str(np.round(sense.get_temperature(), 1))
         s_times[i] = datetime.now().strftime("%d.%m. %H:00")
 
@@ -104,6 +116,8 @@ def main():
         s = zip(s_times, s_values)
         s = sorted(s, key=lambda t: t[0])
         s_times, s_values = zip(*s)
+        s_times = list(s_times)
+        s_values = list(s_values)
 
         write_to_db(o_times, f_times, s_times,  o_values, f_values, s_values)
         write_sensor_values(s_times, s_values)
