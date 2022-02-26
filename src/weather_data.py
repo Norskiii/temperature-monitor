@@ -27,7 +27,7 @@ def get_temperature_forecast():
         print('Failed to retrieve weather data')
         times = []
         values = []
-        
+        
     return times, values
 
 
