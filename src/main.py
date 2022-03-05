@@ -5,6 +5,7 @@ import time
 import numpy as np
 from sense_hat import SenseHat
 import os
+from collections import deque
 
 
 sense = SenseHat()
@@ -70,6 +71,8 @@ def main():
 
     # Sensor values
     s_times, s_values = read_sensor_values()
+    s_times = deque(s_times)
+    s_values = deque(s_values)
     f_times = []
     f_values = []
     o_times = []
@@ -92,10 +95,11 @@ def main():
             o_times = new_o_times
             o_values = new_o_values
             
-        s_values[i] = str(np.round(sense.get_temperature(), 1))
-        s_times[i] = datetime.now().strftime("%d.%m. %H:00")
+        s_values.pop()
+        s_values.appendleft(str(np.round(sense.get_temperature(), 1)))
 
-        # write_sensor_values(s_times, s_values)
+        s_times.pop()
+        s_times.appendleft(datetime.now().strftime("%d.%m. %H:00"))
 
         for temperature in f_values:
             if float(temperature) < 10:
@@ -112,17 +116,11 @@ def main():
         else:
             all_ok()
         
-        # sort sensor times and values
-        s = zip(s_times, s_values)
-        s = sorted(s, key=lambda t: t[0])
-        s_times, s_values = zip(*s)
-        s_times = list(s_times)
-        s_values = list(s_values)
 
-        write_to_db(o_times, f_times, s_times,  o_values, f_values, s_values)
-        write_sensor_values(s_times, s_values)
+        write_to_db(o_times, f_times, list(s_times),  o_values, f_values, list(s_values))
+        write_sensor_values(list(s_times), list(s_values))
 
-        print("Waiting for next update (1H)", flush=True)
+        #print("Waiting for next update (1H)", flush=True)
         time.sleep(3600)
         i += 1
         i = i % 24

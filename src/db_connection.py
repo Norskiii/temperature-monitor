@@ -36,7 +36,7 @@ def write_to_db(o_times, f_times, s_times, o_values, f_values, s_values):
     for i in range(len(f_values)):
         f_data.append({'x':f_times[i], 'y':f_values[i]})
 
-    for i in range(len(s_values)):
+    for i in range(len(s_values)):
         s_data.append({'x':s_times[i], 'y':s_values[i]})
  
     # Cornvert lists into JSON strings what will be saved to the database
@@ -61,7 +61,7 @@ def write_to_db(o_times, f_times, s_times, o_values, f_values, s_values):
         connection.commit()
 
         count = cursor.rowcount
-        print(timestamp, count, "Rows updated", flush=True)
+        print(timestamp, count, "Rows updated", end='\r', flush=True)
 
     except (Exception, psycopg2.Error) as error:
         print(timestamp, "Error while updating table", error, flush=True)
@@ -71,5 +71,5 @@ def write_to_db(o_times, f_times, s_times, o_values, f_values, s_values):
         if connection:
             cursor.close()
             connection.close()
-            print(timestamp, "PostgreSQL connection is closed", flush=True)
+            print(timestamp, "PostgreSQL connection is closed", end='\r', flush=True)
 
