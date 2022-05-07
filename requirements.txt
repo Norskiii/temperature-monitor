@@ -2,3 +2,4 @@ requests
 numpy
 sense_hat
 fmiopendata
+psycopg2-binary
