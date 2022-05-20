@@ -86,7 +86,7 @@ def main():
     # start loop approximately on the hour
     minutes = 60 - (time.time() / 60%60) # minutes until start
     timestamp = datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-    print(timestamp, "Waiting", minutes, "minutes", flush=True,  end='\r')
+    print(timestamp, "Waiting", np.round(minutes,2), "minutes", flush=True)
     time.sleep(round(60*minutes))
 
     while True:
@@ -121,18 +121,26 @@ def main():
                 red_warning = True
                 
         if yellow_warning and not red_warning:
-            show_warning([255, 255, 0])
+            #show_warning([255, 255, 0])
+            color = (255, 255, 0)
         elif red_warning:
-            show_warning([255, 0, 0])
+            #show_warning([255, 0, 0])
+            color = (255, 0, 0)
         else:
-            all_ok()
+            #all_ok()
+            color = (0, 255, 0)
         
 
         write_to_db(o_times, f_times, list(s_times),  o_values, f_values, list(s_values), args.app_name)
         write_sensor_values(list(s_times), list(s_values))
 
         #print("Waiting for next update (1H)", flush=True)
-        time.sleep(3600)
+        #time.sleep(3600)
+        
+        iter_time = time.time() + 3600  # time until next iteration start
+        while time.time() < iter_time:
+            sense.show_message(str(s_values[0]), "C", text_colour-color)
+            
         i += 1
         i = i % 24
 
