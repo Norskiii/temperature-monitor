@@ -6,6 +6,7 @@ import numpy as np
 from sense_hat import SenseHat
 import os
 from collections import deque
+import argparse
 
 
 sense = SenseHat()
@@ -67,6 +68,11 @@ def all_ok():
 
 
 def main():
+    parser = argparse.ArgumentParser(description='Temperature monitor using senseHat and Heroku Postgres')
+    parser.add_argument('app_name', type=str, help='Name of Heroku app')
+    args = parser.parse_args()
+    app_name = args[0]
+
     i = 0
 
     # Sensor values
@@ -117,7 +123,7 @@ def main():
             all_ok()
         
 
-        write_to_db(o_times, f_times, list(s_times),  o_values, f_values, list(s_values))
+        write_to_db(o_times, f_times, list(s_times),  o_values, f_values, list(s_values), app_name)
         write_sensor_values(list(s_times), list(s_values))
 
         #print("Waiting for next update (1H)", flush=True)

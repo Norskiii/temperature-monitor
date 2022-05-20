@@ -17,7 +17,7 @@ def check_for_nan_values(values):
     return new_values
 
 
-def write_to_db(o_times, f_times, s_times, o_values, f_values, s_values):
+def write_to_db(o_times, f_times, s_times, o_values, f_values, s_values, app_name):
     # Check all lists for NaN values
     o_values = check_for_nan_values(o_values)
     f_values = check_for_nan_values(f_values)
@@ -48,7 +48,7 @@ def write_to_db(o_times, f_times, s_times, o_values, f_values, s_values):
                (f_json, 2),
                (s_json, 3)]
     
-    result = subprocess.run(['heroku','config:get','DATABASE_URL', '-a', 'norski-live'], stdout=subprocess.PIPE)
+    result = subprocess.run(['heroku','config:get','DATABASE_URL', '-a', app_name], stdout=subprocess.PIPE)
     url = result.stdout.decode('ascii').strip()
     #print("Connecting to database url:", url, flush=True)
     timestamp = datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
