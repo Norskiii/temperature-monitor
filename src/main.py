@@ -139,7 +139,7 @@ def main():
         
         iter_time = time.time() + 3600  # time until next iteration start
         while time.time() < iter_time:
-            sense.show_message(str(s_values[0]), "C", text_colour-color)
+            sense.show_message(str(s_values[0])+"C", text_colour=color)
             
         i += 1
         i = i % 24
@@ -147,5 +147,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
