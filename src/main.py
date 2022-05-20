@@ -83,6 +83,12 @@ def main():
     o_times = []
     o_values = []
 
+    # start loop approximately on the hour
+    minutes = 60 - (time.time() / 60%60) # minutes until start
+    timestamp = datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+    print(timestamp, "Waiting", minutes, "minutes", flush=True,  end='\r')
+    time.sleep(round(60*minutes))
+
     while True:
         sense.clear()
         yellow_warning = False
